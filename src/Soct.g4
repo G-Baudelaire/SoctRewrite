@@ -22,8 +22,12 @@ program
     ;
 
 expressions
+    : statement
+    | expressions statement
+    ;
+
+statement
     : RUN expression
-    | expressions RUN expression
     ;
 
 expression: LPAREN agent RPAREN;
@@ -32,27 +36,27 @@ inaction
     : LPAREN RPAREN
     ;
 
-solo_objects
-    : channel_list
+soloObjects
+    : channelList
     | CHANNEL
     ;
 
 solo
-    : CHANNEL (SEND | RECEIVE | REPLICATED_RECEIVE) solo_objects
+    : CHANNEL (SEND | RECEIVE | REPLICATED_RECEIVE) soloObjects
     ;
 
 agent
     : inaction
     | solo
     | agent COMPOSITION agent
-    | BIND channel_list expression
+    | BIND channelList expression
     ;
 
-inner_list
+innerList
     : CHANNEL
-    | inner_list COMMA CHANNEL
+    | innerList COMMA CHANNEL
     ;
 
-channel_list
-    : LBRACKET inner_list RBRACKET
+channelList
+    : LBRACKET innerList RBRACKET
     ;

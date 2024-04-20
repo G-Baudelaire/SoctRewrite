@@ -13,8 +13,13 @@ public abstract class Solo {
         return channel;
     }
 
-    public SoloObjects getSoloObjects() {
-        return soloObjects;
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() +
+                "{" +
+                "channel=" + channel +
+                ", soloObjects=" + soloObjects +
+                '}';
     }
 }
 
