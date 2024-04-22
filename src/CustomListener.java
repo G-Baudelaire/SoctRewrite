@@ -44,7 +44,7 @@ public class CustomListener extends SoctBaseListener {
             solo = new ReplicatedReceive(channel, soloObjects);
         }
 
-        currentStatement.addSolo(solo);
+        currentStatement.addStatementValue(solo);
     }
 
     private SoloObjects getSoloObjects(SoctParser.SoloObjectsContext soloObjectsContext) {

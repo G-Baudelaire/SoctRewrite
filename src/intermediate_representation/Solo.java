@@ -1,8 +1,8 @@
 package intermediate_representation;
 
-public abstract class Solo {
-    private final Channel channel;
-    private final SoloObjects soloObjects;
+public abstract class Solo implements StatementValue{
+    protected final Channel channel;
+    protected final SoloObjects soloObjects;
 
     Solo(Channel channel, SoloObjects soloObjects) {
         this.channel = channel;
@@ -11,6 +11,10 @@ public abstract class Solo {
 
     public Channel getChannel() {
         return channel;
+    }
+
+    public SoloObjects getSoloObjects() {
+        return soloObjects;
     }
 
     @Override

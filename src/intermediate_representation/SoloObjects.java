@@ -2,7 +2,7 @@ package intermediate_representation;
 
 import java.util.ArrayList;
 
-public class SoloObjects {
+public class SoloObjects implements StatementValue{
     private final ArrayList<Channel> channels;
 
     public SoloObjects(ArrayList<Channel> channels) {
@@ -12,6 +12,10 @@ public class SoloObjects {
     public SoloObjects(Channel channel) {
         this.channels = new ArrayList<>(1);
         this.channels.add(channel);
+    }
+
+    public ArrayList<Channel> getChannels() {
+        return channels;
     }
 
     @Override

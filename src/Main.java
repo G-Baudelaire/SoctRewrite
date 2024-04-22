@@ -4,28 +4,52 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Main {
-    // Main method to test our Foo class
     public static void main(String[] args) {
-        // Assuming you have already generated the lexer and parser classes
-        String codeInput = "run (x!x | x?y) " + "run (x!y)" + "run (y!y)";
-        SoctLexer lexer = new SoctLexer(CharStreams.fromString(codeInput));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        SoctParser parser = new SoctParser(tokens);
+        // Check if the user provided a file path as a command-line argument
+        if (args.length != 1) {
+            System.out.println("Usage: java Main <file_path>");
+            return;
+        }
 
-        // Create a parse tree from the start rule
-        ParseTree tree = parser.program();
+        String filePath = args[0]; // Get the file path from the command-line arguments
 
-        // Create a walker
-        ParseTreeWalker walker = new ParseTreeWalker();
+        try {
+            // Open the file for reading
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            StringBuilder codeInputBuilder = new StringBuilder();
 
-        // Instantiate your custom listener
-        CustomListener listener = new CustomListener();
+            // Read each line from the file and append it to the codeInputBuilder
+            String line;
+            while ((line = reader.readLine()) != null) {
+                codeInputBuilder.append(line).append("\n");
+            }
 
-        // Walk the parse tree with your listener
-        walker.walk(listener, tree);
+            // Close the reader
+            reader.close();
 
-        Expressions expressions = listener.getExpressions();
-        System.out.println(expressions);
+            // Get the code input as a string
+            String codeInput = codeInputBuilder.toString();
+
+            // Proceed with your existing code
+            SoctLexer lexer = new SoctLexer(CharStreams.fromString(codeInput));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            SoctParser parser = new SoctParser(tokens);
+
+            ParseTree tree = parser.program();
+            ParseTreeWalker walker = new ParseTreeWalker();
+            CustomListener listener = new CustomListener();
+            walker.walk(listener, tree);
+
+            Expressions expressions = listener.getExpressions();
+            expressions.execute();
+            System.out.println(expressions);
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+        }
     }
 }
