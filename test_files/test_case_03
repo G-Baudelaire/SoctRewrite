@@ -1,0 +1,1 @@
+run (bind [x] (u?[x,x]) | bind [y] (u![y,z] | bind[x] (R![a,x,y,z])))

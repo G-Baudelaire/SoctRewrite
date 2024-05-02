@@ -1,12 +1,13 @@
-import intermediate_representation.Expressions;
+import intermediate_representation.Program;
+import intermediate_representation.Statement;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,19 +36,22 @@ public class Main {
             // Get the code input as a string
             String codeInput = codeInputBuilder.toString();
 
-            // Proceed with your existing code
+            // Create a lexer and parser for the input
             SoctLexer lexer = new SoctLexer(CharStreams.fromString(codeInput));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             SoctParser parser = new SoctParser(tokens);
 
+            // Parse the input to get the parse tree
             ParseTree tree = parser.program();
-            ParseTreeWalker walker = new ParseTreeWalker();
-            CustomListener listener = new CustomListener();
-            walker.walk(listener, tree);
 
-            Expressions expressions = listener.getExpressions();
-            expressions.execute();
-            System.out.println(expressions);
+            // Create a visitor and visit the parse tree
+            CustomVisitor visitor = new CustomVisitor();
+            visitor.visit(tree);
+
+            // Retrieve the processed expressions from the visitor
+            Program program = visitor.getProgram();
+            program.execute();  // Assuming `execute` is a method to process/run the expressions
+            System.out.println(program);
         } catch (IOException e) {
             System.err.println("Error reading from file: " + e.getMessage());
         }

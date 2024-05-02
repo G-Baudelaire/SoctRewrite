@@ -1,1 +1,1 @@
-run (x!x | x?*y)
+run (bind [x] (u!y | u?x | R![a, x, y]))

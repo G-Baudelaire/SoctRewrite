@@ -23,12 +23,12 @@ public class Statement {
     private class ComputeRecord {
         public ArrayList<Send> sends;
         public ArrayList<Receive> receives;
-        public ArrayList<SoloObjects> soloObjects;
+        public ArrayList<PrintStatement> printStatements;
 
         ComputeRecord() {
             sends = new ArrayList<>();
             receives = new ArrayList<>();
-            soloObjects = new ArrayList<>();
+            printStatements = new ArrayList<>();
         }
 
     }
@@ -38,26 +38,54 @@ public class Statement {
         ComputeRecord computeRecord = new ComputeRecord();
         sortStatementValues(computeRecord);
 
+
+        for (PrintStatement printStatement : computeRecord.printStatements) {
+            System.out.println(printStatement.getString());
+        }
         for (int sendIndex = 0; sendIndex < computeRecord.sends.size(); sendIndex++) {
             Send send = computeRecord.sends.get(sendIndex);
             for (int receiveIndex = 0; receiveIndex < computeRecord.receives.size(); receiveIndex++) {
                 Receive receive = computeRecord.receives.get(receiveIndex);
-                if (receive.isCommunicable(send)){
-                    computeRecord.soloObjects.add(send.getSoloObjects());
-                    computeRecord.sends.remove(send);
-                    sendIndex--;
-                    // Don't remove it if it's a ReplicatedReceive
-                    if (receive.getClass() == Receive.class){
-                        computeRecord.receives.remove(receiveIndex);
+                if (receive.isSameChannelAndObjectSize(send)) {
+                    boolean attemptSuccess = attemptCommunication(computeRecord,receive,send);
+
+                    if (attemptSuccess){
+                        computeRecord.sends.remove(send);
+                        computeRecord.receives.remove(receive);
+                        sendIndex = -1;
+                        receiveIndex = -1;
                     }
-                    break;
                 }
             }
         }
         statementValues = new ArrayList<>();
         statementValues.addAll(computeRecord.sends);
         statementValues.addAll(computeRecord.receives);
-        statementValues.addAll(computeRecord.soloObjects);
+    }
+    private boolean attemptCommunication(ComputeRecord computeRecord, Receive receive, Send send){
+        EquivalenceClasses equivalenceClasses = new EquivalenceClasses();
+        EquivalenceClasses.CommunicationRecord communicationRecord =
+                equivalenceClasses.checkCommunicationForScope(receive.getSoloObjects(), send.getSoloObjects());
+        if (!communicationRecord.isCommunicationPossible){
+            return  false;
+        }
+        performSubstitutions(communicationRecord, computeRecord);
+        return true;
+    }
+
+    private void performSubstitutions(EquivalenceClasses.CommunicationRecord communicationRecord, ComputeRecord computeRecord){
+        for (int i = 0; i < communicationRecord.rangeChannels.size(); i++) {
+
+            for (int j = 0; j < computeRecord.sends.size(); j++) {
+                Send send = computeRecord.sends.get(j);
+                send.substitution(communicationRecord.rangeChannels.get(i), communicationRecord.equivalenceSets.get(i));
+            }
+
+            for (int j = 0; j < computeRecord.receives.size(); j++) {
+                Receive receive = computeRecord.receives.get(j);
+                receive.substitution(communicationRecord.rangeChannels.get(i), communicationRecord.equivalenceSets.get(i));
+            }
+        }
     }
 
     private void sortStatementValues(ComputeRecord computeRecord) {
@@ -66,10 +94,8 @@ public class Statement {
                 computeRecord.sends.add((Send) value);
             } else if (value.getClass() == Receive.class) {
                 computeRecord.receives.add((Receive) value);
-            } else if (value.getClass() == ReplicatedReceive.class) {
-                computeRecord.receives.add((ReplicatedReceive) value);
             } else {
-                computeRecord.soloObjects.add((SoloObjects) value);
+                computeRecord.printStatements.add((PrintStatement) value);
             }
         }
     }

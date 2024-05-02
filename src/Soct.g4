@@ -1,55 +1,53 @@
-// DELETE THIS CONTENT IF YOU PUT COMBINED GRAMMAR IN Parser TAB
 grammar Soct;
 
-
-WS: [ \t\n\r\f]+ -> skip ;
+WHITESPACE: [ \t\n\r\f]+ -> skip ;
+PRINT: 'print' ;
+MATCH: 'match' ;
 RUN: 'run' ;
 BIND : 'bind' ;
 COMPOSITION : '|' ;
 SEND : '!' ;
-REPLICATED_RECEIVE : '?*' ;
 RECEIVE : '?' ;
 COMMA : ',' ;
 LPAREN : '(' ;
 RPAREN : ')' ;
 LBRACKET : '[' ;
 RBRACKET : ']' ;
+STRING: '"' ( ~["\r\n]* ) '"';
 CHANNEL: [a-zA-Z_][a-zA-Z_0-9]* ;
 
 
 program
-    : expressions EOF
+    : statements EOF
     ;
 
-expressions
+statements
     : statement
-    | expressions statement
+    | statements statement
     ;
 
 statement
-    : RUN expression
-    ;
-
-expression: LPAREN agent RPAREN;
-
-inaction
-    : LPAREN RPAREN
-    ;
-
-soloObjects
-    : channelList
-    | CHANNEL
-    ;
-
-solo
-    : CHANNEL (SEND | RECEIVE | REPLICATED_RECEIVE) soloObjects
+    : RUN LPAREN agent RPAREN
     ;
 
 agent
     : inaction
     | solo
     | agent COMPOSITION agent
-    | BIND channelList expression
+    | LPAREN agent RPAREN COMPOSITION agent
+    | agent COMPOSITION LPAREN agent RPAREN
+    | LPAREN agent RPAREN COMPOSITION LPAREN agent RPAREN
+    | BIND channelList LPAREN agent RPAREN
+    | MATCH channelList channelList LPAREN agent RPAREN
+    ;
+
+inaction
+    : LPAREN RPAREN
+    ;
+
+solo
+    : CHANNEL (SEND | RECEIVE) (channelList | CHANNEL)
+    | PRINT SEND STRING
     ;
 
 innerList

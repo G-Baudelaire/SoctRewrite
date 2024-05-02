@@ -42,4 +42,8 @@ public class Binding {
     public boolean hasChannel(String channelName) {
         return boundChannels.contains(channelName);
     }
+
+    boolean isFreeScope() {
+        return false;
+    }
 }

@@ -2,7 +2,7 @@ package intermediate_representation;
 
 import java.util.ArrayList;
 
-public class Expressions {
+public class Program {
     private final ArrayList<Statement> statements = new ArrayList<>();
 
     @Override
@@ -14,8 +14,9 @@ public class Expressions {
                 .append("=");
 
         for (Statement statement : statements) {
-            stringBuilder.append(statement);
+            stringBuilder.append(statement).append(", ");
         }
+        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
 
         stringBuilder.append("}");
         return stringBuilder.toString();

@@ -1,0 +1,1 @@
+run (bind [x] (a?[x,y] | T1?x) | bind [z] (a![w,z] | T2?z))
