@@ -26,7 +26,6 @@ public class Channel {
     public static Channel getChannel(String channelName, ArrayList<Binding> bindings) {
         Binding binding = selectBinding(channelName, bindings);
 
-
         synchronized (Channel.class) {
             for (Channel existingChannel : channels) {
                 if (channelName.equals(existingChannel.channelName) && existingChannel.getBinding() == binding) {

@@ -42,10 +42,13 @@ public class Statement {
         for (PrintStatement printStatement : computeRecord.printStatements) {
             System.out.println(printStatement.getString());
         }
+
         for (int sendIndex = 0; sendIndex < computeRecord.sends.size(); sendIndex++) {
             Send send = computeRecord.sends.get(sendIndex);
+            if (!send.isMatching()) continue;
             for (int receiveIndex = 0; receiveIndex < computeRecord.receives.size(); receiveIndex++) {
                 Receive receive = computeRecord.receives.get(receiveIndex);
+                if (!receive.isMatching()) continue;
                 if (receive.isSameChannelAndObjectSize(send)) {
                     boolean attemptSuccess = attemptCommunication(computeRecord,receive,send);
 
@@ -53,7 +56,7 @@ public class Statement {
                         computeRecord.sends.remove(send);
                         computeRecord.receives.remove(receive);
                         sendIndex = -1;
-                        receiveIndex = -1;
+                        break;
                     }
                 }
             }

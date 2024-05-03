@@ -11,11 +11,18 @@ public abstract class Solo implements StatementValue {
     Solo(Channel channel, ArrayList<Channel> soloObjects, ArrayList<Match> matches) {
         this.channel = channel;
         this.soloObjects = soloObjects;
-        this.matches = matches;
+        this.matches= new ArrayList<>(matches.size());
+        this.matches.addAll(matches);
     }
-
+    public boolean isMatching(){
+        for (Match match : matches) {
+            if (!match.isMatching()) return false;
+        }
+        return true;
+    }
     public void substitution(Channel replacementChannel, HashSet<Channel> replacedChannels) {
         HashSet<Channel> intersection = new HashSet<>();
+
         intersection.add(channel);
         intersection.retainAll(replacedChannels);
 
@@ -24,12 +31,22 @@ public abstract class Solo implements StatementValue {
         }
 
         for (int i = 0; i < soloObjects.size(); i++) {
-            intersection = new HashSet<>();
-            intersection.add(soloObjects.get(i));
-            intersection.retainAll(replacedChannels);
-
-            if (intersection.size() == 1) {
+            if (replacedChannels.contains(soloObjects.get(i))) {
                 soloObjects.set(i, replacementChannel);
+            }
+        }
+
+        for (Match match : matches) {
+            for (int j = 0; j < match.channels1.size(); j++) {
+                if (replacedChannels.contains(match.channels1.get(j))) {
+                    match.channels1.set(j, replacementChannel);
+                }
+            }
+
+            for (int j = 0; j < match.channels2.size(); j++) {
+                if (replacedChannels.contains(match.channels2.get(j))) {
+                    match.channels2.set(j, replacementChannel);
+                }
             }
         }
     }
@@ -44,10 +61,10 @@ public abstract class Solo implements StatementValue {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() +
-                "{" +
+        return "Solo{" +
                 "channel=" + channel +
                 ", soloObjects=" + soloObjects +
+                ", matches=" + matches +
                 '}';
     }
 }

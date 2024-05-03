@@ -1,0 +1,3 @@
+run (bind [a] (R!a | R?a))
+run (bind [a] ((R!a | R?a)))
+run (bind [a] (((R!a | R?a))))

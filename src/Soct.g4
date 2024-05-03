@@ -34,11 +34,9 @@ agent
     : inaction
     | solo
     | agent COMPOSITION agent
-    | LPAREN agent RPAREN COMPOSITION agent
-    | agent COMPOSITION LPAREN agent RPAREN
-    | LPAREN agent RPAREN COMPOSITION LPAREN agent RPAREN
     | BIND channelList LPAREN agent RPAREN
     | MATCH channelList channelList LPAREN agent RPAREN
+    | LPAREN agent RPAREN
     ;
 
 inaction

@@ -67,7 +67,6 @@ public class CustomVisitor extends SoctBaseVisitor<Void> {
             for (String channelName : currentChannelList) {
                 rhsChannels.add(Channel.getChannel(channelName, currentBindings));
             }
-
             try {
                 Match match = new Match(lhsChannels, rhsChannels);
                 currentMatches.add(match);
